@@ -51,9 +51,26 @@ function removeAds() {
 
 // 초기 로드 시 광고 제거
 if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', removeAds);
+  document.addEventListener('DOMContentLoaded', () => {
+    removeAds();
+
+    // 문서가 준비된 시점에 observer도 시작
+    if (document.body) {
+      observer.observe(document.body, {
+        childList: true,
+        subtree: true
+      });
+    }
+  });
 } else {
   removeAds();
+
+  if (document.body) {
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true
+    });
+  }
 }
 
 // 동적으로 추가되는 광고도 감지하여 제거
@@ -65,19 +82,20 @@ const observer = new MutationObserver((mutations) => {
   });
 });
 
-observer.observe(document.body, {
-  childList: true,
-  subtree: true
-});
+// 만약 아직 document.body가 없으면 DOMContentLoaded에서 observer를 시작하도록 위에서 처리함
 
 // 페이지 내 iframe 광고 제거
 window.addEventListener('load', () => {
   const iframes = document.querySelectorAll('iframe');
   iframes.forEach(iframe => {
-    const src = iframe.src.toLowerCase();
-    if (src.includes('ads') || src.includes('ad-') || src.includes('doubleclick')) {
-      iframe.style.display = 'none';
-      iframe.remove();
+    try {
+      const src = (iframe.src || '').toLowerCase();
+      if (src.includes('ads') || src.includes('ad-') || src.includes('doubleclick')) {
+        iframe.style.display = 'none';
+        iframe.remove();
+      }
+    } catch (e) {
+      // cross-origin 접근 등 예외 무시
     }
   });
 });
