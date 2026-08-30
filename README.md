@@ -94,11 +94,7 @@
 | activeTab | 현재 탭 접근 |
 | \<all_urls\> | 모든 웹사이트 접근 |
 
-## 🐛 알려진 이슈
 
-- Chrome 구 버전(MV2)에서는 webRequest API 사용 불가
-- 일부 동적 광고는 감지되지 않을 수 있음
-- HTTPS 페이지에서 iframe 광고 차단 제한 가능
 
 ## 📝 향후 기능
 
