@@ -1,44 +1,16 @@
-
 <!DOCTYPE html>
-<html lang="ko">
+<html>
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Ad Blocker</title>
-  <link rel="stylesheet" href="popup.css">
+  <meta charset="utf-8">
+  <style>
+    body { width: 200px; font-family: sans-serif; padding: 10px; margin: 0; }
+    h3 { font-size: 14px; margin-top: 0; }
+    button { width: 100%; padding: 6px; cursor: pointer; }
+  </style>
 </head>
 <body>
-  <div class="container">
-    <div class="header">
-      <h1>🚫 Ad Blocker</h1>
-      <p>광고 차단 확장프로그램</p>
-    </div>
-    
-    <div class="stats">
-      <div class="stat-item">
-        <span class="stat-label">차단된 광고:</span>
-        <span class="stat-value" id="blockedCount">0</span>
-      </div>
-    </div>
-    
-    <div class="controls">
-      <label class="toggle-switch">
-        <input type="checkbox" id="enableToggle" checked>
-        <span class="slider"></span>
-      </label>
-      <span id="statusText">확장프로그램 활성화</span>
-    </div>
-    
-    <div class="settings">
-      <button id="resetBtn">통계 초기화</button>
-      <button id="whitelistBtn">화이트리스트</button>
-    </div>
-    
-    <footer>
-      <p>버전 1.0.0</p>
-    </footer>
-  </div>
-  
+  <h3>광고 차단기</h3>
+  <button id="toggleBtn">상태 전환</button>
   <script src="popup.js"></script>
 </body>
 </html>
