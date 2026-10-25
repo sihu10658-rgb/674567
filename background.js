@@ -1,41 +1,20 @@
-// 확장프로그램이 설치될 때 차단 규칙을 등록합니다.
-chrome.runtime.onInstalled.addListener(() => {
-  const rules = [
-    {
-      id: 1,
-      priority: 1,
-      action: { type: "block" },
-      condition: {
-        // 차단할 광고 도메인 패턴 (예시)
-        urlFilter: "||googlesyndication.com^",
-        resourceTypes: ["script", "image", "sub_frame", "xmlhttprequest"]
-      }
-    },
-    {
-      id: 2,
-      priority: 1,
-      action: { type: "block" },
-      condition: {
-        urlFilter: "||doubleclick.net^",
-        resourceTypes: ["script", "image", "sub_frame", "xmlhttprequest"]
-      }
-    },
-    {
-      id: 3,
-      priority: 1,
-      action: { type: "block" },
-      condition: {
-        urlFilter: "||adserver^",
-        resourceTypes: ["script", "image", "sub_frame", "xmlhttprequest"]
-      }
-    }
-  ];
+// WebAssembly 모듈 로드 완료 후
+Module.onRuntimeInitialized = () => {
+    // C++로 만든 should_block 함수를 자바스크립트 함수로 래핑
+    const checkUrl = Module.cwrap('should_block', 'number', ['string']);
 
-  // 기존 규칙을 지우고 새 규칙을 등록
-  chrome.declarativeNetRequest.updateDynamicRules({
-    removeRuleIds: rules.map(r => r.id),
-    addRules: rules
-  }, () => {
-    console.log("광고 차단 규칙이 적용되었습니다.");
-  });
-});
+    // 네트워크 요청 감지 (declarativeNetRequest 대신 세밀한 제어가 필요할 때)
+    chrome.webRequest.onBeforeRequest.addListener(
+        (details) => {
+            // C++ 함수로 초고속 차단 여부 판별 (마이크로초 단위 성능!)
+            const isBlocked = checkUrl(details.url);
+            if (isBlocked) {
+                console.log("C++ 엔진이 차단함:", details.url);
+                return { cancel: true };
+            }
+            return { cancel: false };
+        },
+        { urls: ["<all_urls>"] },
+        ["blocking"]
+    );
+};
