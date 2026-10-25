@@ -1,2 +1,30 @@
-// 웹페이지가 로드될 때 실행될 스크립트
-console.log("광고 차단기 콘텐츠 스크립트가 실행되었습니다.");
+// 광고 영역으로 자주 쓰이는 클래스나 아이디 선택자 목록
+const adSelectors = [
+  'iframe[src*="ads"]',
+  'ins.adsbygoogle',
+  '.ad-banner',
+  '.advertisement',
+  'div[id^="google_ads_iframe"]'
+];
+
+function hideAds() {
+  adSelectors.forEach(selector => {
+    const elements = document.querySelectorAll(selector);
+    elements.forEach(el => {
+      el.style.display = 'none';
+    });
+  });
+}
+
+// 페이지가 로드될 때 및 동적으로 생성되는 광고를 숨기기 위한 Observer 설정
+const observer = new MutationObserver(() => {
+  hideAds();
+});
+
+observer.observe(document.documentElement, {
+  childList: true,
+  subtree: true
+});
+
+// 초기 실행
+window.addEventListener('DOMContentLoaded', hideAds);
