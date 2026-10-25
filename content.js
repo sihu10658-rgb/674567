@@ -16,7 +16,7 @@ function hideAds() {
   });
 }
 
-// 페이지가 로드될 때 및 동적으로 생성되는 광고를 숨기기 위한 Observer 설정
+// 동적으로 생성되는 광고를 감시하기 위한 Observer 설정
 const observer = new MutationObserver(() => {
   hideAds();
 });
