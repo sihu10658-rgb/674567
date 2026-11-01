@@ -5,7 +5,34 @@
     "action": { "type": "block" },
     "condition": {
       "urlFilter": "*://*.doubleclick.net/*",
-      "resourceTypes": ["script", "image", "sub_frame"]
+      "resourceTypes": ["script", "image", "stylesheet", "sub_frame", "font", "media"]
+    }
+  },
+  {
+    "id": 2,
+    "priority": 1,
+    "action": { "type": "block" },
+    "condition": {
+      "urlFilter": "*://*.googlesyndication.com/*",
+      "resourceTypes": ["script", "image", "sub_frame", "stylesheet", "font"]
+    }
+  },
+  {
+    "id": 3,
+    "priority": 1,
+    "action": { "type": "block" },
+    "condition": {
+      "urlFilter": "*://*.googleadservices.com/*",
+      "resourceTypes": ["script", "image", "sub_frame", "stylesheet"]
+    }
+  },
+  {
+    "id": 4,
+    "priority": 1,
+    "action": { "type": "block" },
+    "condition": {
+      "urlFilter": "*://*.facebook.com/*ad*",
+      "resourceTypes": ["script", "image", "sub_frame", "stylesheet"]
     }
   }
 ]

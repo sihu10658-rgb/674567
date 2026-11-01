@@ -1,15 +1,16 @@
 {
   "manifest_version": 3,
-  "name": "나만의 광고 차단기",
-  "version": "1.0",
-  "description": "원하는 광고 도메인과 요소를 차단하는 확장프로그램",
+  "name": "AdGuard Lite",
+  "version": "1.1.0",
+  "description": "광고 URL 차단 + DOM 광고 숨김 + 통계 집계",
   "action": {
+    "default_title": "AdGuard Lite",
+    "default_popup": "popup.html",
     "default_icon": {
       "16": "icon16.png",
       "48": "icon48.png",
       "128": "icon128.png"
-    },
-    "default_popup": "popup.html"
+    }
   },
   "icons": {
     "16": "icon16.png",
@@ -17,11 +18,11 @@
     "128": "icon128.png"
   },
   "permissions": [
-    "declarativeNetRequest",
-    "declarativeNetRequestFeedback",
     "storage",
     "webRequest",
-    "webRequestBlocking"
+    "webRequestBlocking",
+    "declarativeNetRequest",
+    "declarativeNetRequestFeedback"
   ],
   "host_permissions": [
     "<all_urls>"
@@ -33,7 +34,8 @@
     {
       "matches": ["<all_urls>"],
       "js": ["content.js"],
-      "run_at": "document_start"
+      "run_at": "document_start",
+      "all_frames": true
     }
   ]
 }
