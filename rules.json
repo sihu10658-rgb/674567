@@ -4,8 +4,8 @@
     "priority": 1,
     "action": { "type": "block" },
     "condition": {
-      "urlFilter": "*://*.doubleclick.net/*",
-      "resourceTypes": ["script", "image", "stylesheet", "sub_frame", "font", "media"]
+      "urlFilter": "||doubleclick.net^",
+      "resourceTypes": ["script", "image", "sub_frame"]
     }
   },
   {
@@ -13,8 +13,8 @@
     "priority": 1,
     "action": { "type": "block" },
     "condition": {
-      "urlFilter": "*://*.googlesyndication.com/*",
-      "resourceTypes": ["script", "image", "sub_frame", "stylesheet", "font"]
+      "urlFilter": "||googlesyndication.com^",
+      "resourceTypes": ["script", "image", "sub_frame"]
     }
   },
   {
@@ -22,8 +22,8 @@
     "priority": 1,
     "action": { "type": "block" },
     "condition": {
-      "urlFilter": "*://*.googleadservices.com/*",
-      "resourceTypes": ["script", "image", "sub_frame", "stylesheet"]
+      "urlFilter": "||googleadservices.com^",
+      "resourceTypes": ["script", "image", "sub_frame"]
     }
   },
   {
@@ -31,8 +31,8 @@
     "priority": 1,
     "action": { "type": "block" },
     "condition": {
-      "urlFilter": "*://*.facebook.com/*ad*",
-      "resourceTypes": ["script", "image", "sub_frame", "stylesheet"]
+      "urlFilter": "||adsystem.com^",
+      "resourceTypes": ["script", "image", "sub_frame"]
     }
   }
 ]

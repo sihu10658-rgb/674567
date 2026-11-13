@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
   "name": "AdGuard Lite",
-  "version": "1.1.0",
-  "description": "광고 URL 차단 + DOM 광고 숨김 + 통계 집계",
+  "version": "1.2.0",
+  "description": "정적 네트워크 규칙과 변경 노드 기반 DOM 필터로 광고를 차단합니다.",
   "action": {
     "default_title": "AdGuard Lite",
     "default_popup": "popup.html",
@@ -17,18 +17,15 @@
     "48": "icon48.png",
     "128": "icon128.png"
   },
-  "permissions": [
-    "storage",
-    "webRequest",
-    "webRequestBlocking",
-    "declarativeNetRequest",
-    "declarativeNetRequestFeedback"
-  ],
-  "host_permissions": [
-    "<all_urls>"
-  ],
-  "background": {
-    "service_worker": "background.js"
+  "permissions": ["declarativeNetRequest"],
+  "declarative_net_request": {
+    "rule_resources": [
+      {
+        "id": "ad_block_rules",
+        "enabled": true,
+        "path": "rules.json"
+      }
+    ]
   },
   "content_scripts": [
     {
