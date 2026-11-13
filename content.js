@@ -1,4 +1,4 @@
-const AD_SELECTORS = [
+const AD_SELECTOR = [
   'iframe[src*="ads"]',
   'iframe[src*="doubleclick"]',
   'iframe[src*="googlesyndication"]',
@@ -6,72 +6,83 @@ const AD_SELECTORS = [
   'ins.adsbygoogle',
   'div[id^="google_ads_iframe"]',
   'div[id*="google_ads_iframe"]',
-  'div[id*="ad_" ]',
-  'div[class*="ad-" ]',
+  'div[id*="ad_"]',
+  'div[class*="ad-"]',
   'div[class*="ads"]',
   'div[class*="advertisement"]',
   'img[src*="ads"]',
   'img[src*="adview"]',
   'a[href*="ads"]',
-  'a[href*="ad-" ]',
+  'a[href*="ad-"]',
   'script[src*="ads"]',
   'script[src*="doubleclick"]'
+].join(', ');
+
+const HIDE_STYLE = [
+  ['display', 'none'],
+  ['visibility', 'hidden'],
+  ['opacity', '0'],
+  ['max-height', '0'],
+  ['max-width', '0'],
+  ['overflow', 'hidden'],
+  ['pointer-events', 'none']
 ];
 
-const HIDE_STYLE = {
-  display: 'none !important',
-  visibility: 'hidden !important',
-  opacity: '0 !important',
-  maxHeight: '0 !important',
-  maxWidth: '0 !important',
-  overflow: 'hidden !important',
-  pointerEvents: 'none !important'
-};
+// Keep references only in this isolated content-script world; don't add marker
+// attributes to the host page's DOM.
+const hiddenElements = new WeakSet();
+const pendingRoots = new Set();
+let frameScheduled = false;
 
-function applyHideStyle(element) {
-  if (!element || element.dataset.adGuardHidden === 'true') return;
+function hideElement(element) {
+  if (hiddenElements.has(element) || !element.matches(AD_SELECTOR)) return;
 
-  Object.entries(HIDE_STYLE).forEach(([key, value]) => {
-    element.style.setProperty(key.replace(/[A-Z]/g, (m) => '-' + m.toLowerCase()), value);
-  });
-
-  element.dataset.adGuardHidden = 'true';
+  for (const [property, value] of HIDE_STYLE) {
+    element.style.setProperty(property, value, 'important');
+  }
+  hiddenElements.add(element);
 }
 
-function hideAds() {
-  const nodes = document.querySelectorAll(AD_SELECTORS.join(', '));
-  nodes.forEach((node) => {
-    applyHideStyle(node);
-  });
+function scanRoot(root) {
+  if (!root || root.nodeType !== Node.ELEMENT_NODE) return;
+
+  hideElement(root);
+  root.querySelectorAll(AD_SELECTOR).forEach(hideElement);
 }
 
-function scheduleHide() {
-  if (window.__adGuardScheduled) return;
-  window.__adGuardScheduled = true;
-
-  requestAnimationFrame(() => {
-    hideAds();
-    window.__adGuardScheduled = false;
-  });
+function flushPendingRoots() {
+  frameScheduled = false;
+  for (const root of pendingRoots) scanRoot(root);
+  pendingRoots.clear();
 }
 
-const observer = new MutationObserver(() => {
-  scheduleHide();
-});
+function scheduleScan(root) {
+  if (!root || root.nodeType !== Node.ELEMENT_NODE) return;
+  pendingRoots.add(root);
+  if (frameScheduled) return;
+  frameScheduled = true;
+  requestAnimationFrame(flushPendingRoots);
+}
 
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', () => {
-    hideAds();
-    observer.observe(document.documentElement, {
-      childList: true,
-      subtree: true,
-      attributes: true,
-      attributeFilter: ['src', 'class', 'id']
-    });
-  }, { once: true });
-} else {
-  hideAds();
-  observer.observe(document.documentElement, {
+function startObserver() {
+  const root = document.documentElement;
+  if (!root) return;
+
+  // Do one initial scan. Later mutations are limited to changed/inserted nodes
+  // instead of repeatedly searching the entire page.
+  scanRoot(root);
+
+  const observer = new MutationObserver((mutations) => {
+    for (const mutation of mutations) {
+      if (mutation.type === 'attributes') {
+        scheduleScan(mutation.target);
+        continue;
+      }
+      for (const node of mutation.addedNodes) scheduleScan(node);
+    }
+  });
+
+  observer.observe(root, {
     childList: true,
     subtree: true,
     attributes: true,
@@ -79,6 +90,8 @@ if (document.readyState === 'loading') {
   });
 }
 
-window.addEventListener('load', () => {
-  hideAds();
-}, { once: true });
+if (document.documentElement) {
+  startObserver();
+} else {
+  document.addEventListener('DOMContentLoaded', startObserver, { once: true });
+}
